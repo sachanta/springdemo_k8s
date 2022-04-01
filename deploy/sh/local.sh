@@ -31,27 +31,3 @@ kubectl apply -f deploy/web/service.yaml
 
 # LB
 kubectl apply -f deploy/lb/loadbalancer.yaml
-
-CTX=$(kubectl config current-context)
-echo ${CTX}
-
-if [ "${CTX}" == "minikube" ]; then
-    while true; do
-        URL=$(minikube service sbdemo-nginx-lb --url)
-        echo ${URL}
-        if [ "${URL}" == "" ]; then
-            sleep 1
-        else
-            break;
-        fi
-    done
-else
-    URL="http://localhost"
-fi
-
-# Open browser (if failed, open manually)
-echo "open browser for ${URL}/login"
-open ${URL}/login
-
-# Log (stern must be installed)
-stern -l app=sbdemo-apserver

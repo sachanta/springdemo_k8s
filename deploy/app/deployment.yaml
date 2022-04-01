@@ -12,11 +12,15 @@ spec:
     metadata:
       labels:
         app: sbdemo-apserver
-    spec:
+      annotations:
+        sidecar.opentelemetry.io/inject: "true"
+        instrumentation.opentelemetry.io/inject-java: "true"
+    spec:     
       containers:
       - name: apserver
-        image: dayan888/springdemo:apserver
+        image: aasrikar/springdemoapp-auto-java-otel:latest
         imagePullPolicy: Always
+        #command: ["java", "-javaagent:/opt/javaagent/opentelemetry-javaagent.jar", "-Dotel.traces.exporter=otlp", "-Dotel.exporter.otlp.endpoint=http://34.71.182.228:4317", "-jar", "/app/springdemo.jar"]
         ports:
         - containerPort: 8080
         env:
@@ -25,15 +29,10 @@ spec:
           - name: DB_URL
             value: "jdbc:postgresql://sbdemo-postgres-service:5432/demodb?user=postgres&password=postgres"
           - name: PIC_DIR
-            value: "/opt/picDir"
+            value: "/opt"
           - name: REDIS_HOST
             value: "sbdemo-redis-service"
           - name: REDIS_PORT
-            value: "6379"     
-        volumeMounts:
-          - mountPath: "/opt/picDir"
-            name: apserver-pvc
-      volumes:
-      - name: apserver-pvc
-        persistentVolumeClaim:
-          claimName: sbdemo-apserver-pvc
+            value: "6379"
+
+      
